@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Генератор квадратных уравнений</title>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+	 /* Основные стили */
+        :root {
+            --bg-color: #f0f0f0;
+            --text-color: #000;
+            --card-bg-color: #fff;
+            --button-bg-color: #0072ff;
+            --button-hover-color: #0056cc;
+            --border-color: #ddd;
+        }
+
+        /* Тёмная тема */
+        .dark-theme {
+            --bg-color: #1e1e1e;
+            --text-color: #e0e0e0;
+            --card-bg-color: #2c2c2c;
+            --button-bg-color: #3a86ff;
+            --button-hover-color: #2666cc;
+            --border-color: #444;
+        }
+        body {
+            font-family: 'Poppins', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to bottom, #f0f0f0, #cfcfcf);
+            color: #000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            font-size: 2.5rem;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        .controls {
+            background: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            animation: slideIn 1s ease-in-out;
+            width: 90%;
+            max-width: 600px;
+			transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+
+        .controls .group {
+            margin-bottom: 15px;
+        }
+
+        .controls .group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            text-align: left;
+        }
+
+        .controls .group .range-inputs {
+            display: flex;
+            justify-content: space-between;
+        }
+
+		.controls .group input {
+            width: 100%;
+            padding: 8px;
+            border: 2px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 1rem;
+            outline: none;
+            background-color: var(--card-bg-color);
+            color: var(--text-color);
+            transition: border-color 0.3s ease-in-out, background-color 0.3s ease-in-out;
+        }
+
+        input:focus {
+            border-color: #0072ff;
+        }
+
+		
+
+        .additional-options {
+            border-top: 1px solid #ddd;
+            margin-top: 15px;
+            padding-top: 15px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        button {
+            background: #0072ff;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease-in-out, transform 0.2s ease-in-out;
+        }
+
+        button:hover {
+            background: #0056cc;
+            transform: translateY(-3px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .equation-container {
+            margin-top: 20px;
+            background: #fff;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 600px;
+            animation: fadeIn 1s ease-in-out;
+            color: #000;
+			text-align: left;
+        }
+
+        .equation-container div {
+            margin: 10px 0;
+            font-size: 1.2rem;
+			line-height: 1.5;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Генератор квадратных уравнений</h1>
+    
+    <div class="controls">
+        <div class="group">
+            <label>Коэффициент a:</label>
+            <div class="range-inputs">
+                <input type="number" id="minA" placeholder="Минимум" value="-10">
+                <input type="number" id="maxA" placeholder="Максимум" value="10">
+            </div>
+        </div>
+        <div class="group">
+            <label>Коэффициент b:</label>
+            <div class="range-inputs">
+                <input type="number" id="minB" placeholder="Минимум" value="-10">
+                <input type="number" id="maxB" placeholder="Максимум" value="10">
+            </div>
+        </div>
+        <div class="group">
+            <label>Коэффициент c:</label>
+            <div class="range-inputs">
+                <input type="number" id="minC" placeholder="Минимум" value="-10">
+                <input type="number" id="maxC" placeholder="Максимум" value="10">
+            </div>
+        </div>
+
+        <div class="additional-options">
+            <div class="group">
+                <label for="equationCount">Количество уравнений:</label>
+                <input type="number" id="equationCount" value="1" min="1" style="width: 90%; margin-top: 10px;">
+            </div>
+            <div class="checkbox-group">
+                <label>
+                    <input type="checkbox" id="realRootsOnly" style="margin-bottom:15px;"> Только уравнения с рациональными корнями
+                </label>
+                <label class="hidden" id="integerRootsOnlyContainer">
+                    <input type="checkbox" id="integerRootsOnly" style="margin-bottom:15px;"> Только уравнения с целым корнем из D
+                </label>
+            </div>
+        </div>
+
+        <button id="generateButton">Сгенерировать уравнения</button>
+        <button id="showAnswersButton" class="hidden">Вывести ответы</button>
+    </div>
+    
+    <div class="equation-container" id="equationDisplay">Нажмите кнопку, чтобы сгенерировать уравнения</div>
+
+    <script>
+
+
+        let equations = [];
+
+        function generateEquations() {
+            let minA = parseInt(document.getElementById('minA').value);
+            let maxA = parseInt(document.getElementById('maxA').value);
+            let minB = parseInt(document.getElementById('minB').value);
+            let maxB = parseInt(document.getElementById('maxB').value);
+            let minC = parseInt(document.getElementById('minC').value);
+            let maxC = parseInt(document.getElementById('maxC').value);
+            let count = parseInt(document.getElementById('equationCount').value);
+            let realRootsOnly = document.getElementById('realRootsOnly').checked;
+            let integerRootsOnly = document.getElementById('integerRootsOnly').checked;
+
+            if (minA >= maxA || minB >= maxB || minC >= maxC) {
+                alert('Минимальное значение должно быть меньше максимального для каждого коэффициента.');
+                return;
+            }
+
+            if (count < 1) {
+                alert('Количество уравнений должно быть больше нуля.');
+                return;
+            }
+
+            document.getElementById('equationDisplay').innerHTML = '';
+            equations = [];
+
+            for (let i = 0; i < count; i++) {
+                let a, b, c, discriminant;
+
+                do {
+                    a = Math.floor(Math.random() * (maxA - minA + 1)) + minA;
+                    while (a === 0) {
+                        a = Math.floor(Math.random() * (maxA - minA + 1)) + minA;
+                    }
+                    b = Math.floor(Math.random() * (maxB - minB + 1)) + minB;
+                    c = Math.floor(Math.random() * (maxC - minC + 1)) + minC;
+                    discriminant = b * b - 4 * a * c;
+                } while (realRootsOnly && discriminant < 0);
+
+                if (integerRootsOnly && Math.sqrt(discriminant) % 1 !== 0) {
+                    i--;
+                    continue;
+                }
+
+                let aStr = (a === 1) ? 'x²' : (a === -1) ? '-x²' : `${a}x²`;
+                let bStr = (b === 0) ? '' : (b > 0) ? `+ ${b}x` : `- ${Math.abs(b)}x`;
+                let cStr = (c === 0) ? '' : (c > 0) ? `+ ${c}` : `- ${Math.abs(c)}`;
+                let equation = `${aStr} ${bStr} ${cStr} = 0`;
+
+                let roots = calculateRoots(a, b, discriminant);
+                equations.push({ equation, roots });
+
+                document.getElementById('equationDisplay').innerHTML += `<div>${i + 1}) ${equation}</div>`;
+            }
+
+            document.getElementById('showAnswersButton').classList.remove('hidden');
+        }
+
+        function calculateRoots(a, b, discriminant) {
+            if (discriminant < 0) return { root1: null, root2: null };
+            const gcd = (x, y) => (y === 0 ? x : gcd(y, x % y));
+            const sqrtD = Math.sqrt(discriminant);
+            const isPerfectSquare = sqrtD % 1 === 0;
+
+            if (isPerfectSquare) {
+                const numerator1 = -b + sqrtD;
+                const numerator2 = -b - sqrtD;
+                const denominator = 2 * a;
+
+                return {
+                    root1: { numerator: numerator1 / gcd(numerator1, denominator), denominator: denominator / gcd(numerator1, denominator) },
+                    root2: { numerator: numerator2 / gcd(numerator2, denominator), denominator: denominator / gcd(numerator2, denominator) },
+                };
+            } else {
+                return {
+                    root1: { numerator: `${-b} + \\sqrt{${discriminant}}`, denominator: 2 * a },
+                    root2: { numerator: `${-b} - \\sqrt{${discriminant}}`, denominator: 2 * a },
+                };
+            }
+        }
+
+        function formatRoot(root) {
+            if (root === null) return 'Нет корней';
+            if (typeof root.numerator === 'string') return `\\(\\frac{${root.numerator}}{${root.denominator}}\\)`;
+            return root.denominator === 1 ? `\\(${root.numerator}\\)` : `\\(\\frac{${root.numerator}}{${root.denominator}}\\)`;
+        }
+
+        function showAnswers() {
+            let equationDisplay = document.getElementById('equationDisplay');
+            equationDisplay.innerHTML += '<h2>Ответы:</h2>';
+            equations.forEach((eq, index) => {
+                let rootsDisplay = eq.roots.root1 === null
+                    ? 'Нет корней'
+                    : eq.roots.root1 === eq.roots.root2
+                        ? `x = ${formatRoot(eq.roots.root1)}`
+                        : `x₁ = ${formatRoot(eq.roots.root1)}, x₂ = ${formatRoot(eq.roots.root2)}`;
+                equationDisplay.innerHTML += `<div>${index + 1}) ${rootsDisplay}</div>`;
+            });
+            MathJax.typeset();
+        }
+
+        document.getElementById('generateButton').addEventListener('click', generateEquations);
+        document.getElementById('showAnswersButton').addEventListener('click', showAnswers);
+        document.getElementById('realRootsOnly').addEventListener('change', function() {
+            document.getElementById('integerRootsOnlyContainer').classList.toggle('hidden', !this.checked);
+        });
+    </script>
+</body>
+</html>
